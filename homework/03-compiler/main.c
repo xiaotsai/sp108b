@@ -16,9 +16,9 @@ void dump(char *strTable[], int top) {
 }
 
 int main(int argc, char * argv[]) {
-  readText(argv[1], code, TMAX);//整個檔案讀進code
-  puts(code);//印出來
-  lex(code); // 詞彙解析
+  readText(argv[1], code, TMAX);
+  puts(code);
+  lex(code);
   dump(tokens, tokenTop);
   parse();
   return 0;

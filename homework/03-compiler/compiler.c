@@ -89,37 +89,45 @@ void WHILE() {
   emit("(L%d)\n", whileEnd);
 }
 
-// IF = if (E) STMT (else STMT)?
-void IF()
- {
+void FOR() {
+  int forBegin = nextLabel();
+  int forEnd = nextLabel();
+  emit("(L%d)\n", whileBegin);
+  skip("for");
+  skip("(");
+  int e = E();
+  emit("if not T%d goto L%d\n", e, forEnd);
+  skip(")");
+  STMT();
+  emit("goto L%d\n", forBegin);
+  emit("(L%d)\n", forEnd);
+}
+
+
+//IF = if (E) STMT (else STMT)?
+void IF() {
   int ifBegin = nextLabel();
   int ifEnd = nextLabel();
-  emit("(L%d)\n", ifBegin);
   skip("if");
   skip("(");
   int e = E();
-  emit("if not T%d goto L%d\n", e, ifEnd);
+  emit("if not T%d goto L%d\n", e, ifBegin);
   skip(")");
   STMT();
-  emit("goto L%d\n", ifBegin);
-  emit("(L%d)\n", ifEnd);
-  if (isNext("else"))
-    {
-    int elseBegin = nextLabel();
-    int elseEnd = nextLabel();
-    emit("(L%d)\n", elseBegin);
+  emit("goto L%d\n", ifEnd);
+  emit("(L%d)\n", ifBegin);
+  if(isNext("else")){
     skip("else");
-    emit("if not T%d goto L%d\n", e, ifEnd); 
     STMT();
-    emit("goto L%d\n", elseBegin);
-    emit("(L%d)\n", elseEnd);
-    }
   }
-// STMT = WHILE | IF | BLOCK | ASSIGN
+  emit("(L%d)\n", ifEnd);
+}
+
+// STMT =IF | WHILE | BLOCK | ASSIGN
 void STMT() {
   if (isNext("while"))
-     WHILE();
-  else if (isNext("if"))
+    WHILE();
+  if (isNext("if"))
     IF();
   else if (isNext("{"))
     BLOCK();
